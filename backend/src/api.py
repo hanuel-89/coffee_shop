@@ -68,23 +68,25 @@ def get_drinks():
         or appropriate status code indicating reason for failure
 '''
 
+
+@app.route('/drinks-detail')
 @requires_auth('get:drinks-detail')
-@app.route('/drinks-detail', methods=['GET'])
 def get_drinks_detail():
     try:
         drinks = Drink.query.order_by(Drink.id).all()
         if len(drinks) == 0:
             abort(404)
-        drinks = [drink.short() for drink in drinks]
+
+        drinks = [drink.long() for drink in drinks]
         return jsonify(
             {
                 'success': True,
                 'drinks': drinks
             }
         ), 200
+
     except Exception:
         abort(422)
-
 
 '''
 @TODO implement endpoint
@@ -220,6 +222,26 @@ def bad_request(error):
             'message': 'bad request'
         }
     ), 400
+
+@app.errorhandler(401)
+def unauthorized_request(error):
+    return jsonify(
+        {
+            'success': False,
+            'error': 401,
+            'message': 'unauhtorized'
+        }
+    ), 401
+
+@app.errorhandler(403)
+def forbidden_request(error):
+    return jsonify(
+        {
+            'success': False,
+            'error': 403,
+            'message': 'forbidden'
+        }
+    ), 403
 
 @app.errorhandler(AuthError)
 def handle_auth_error(ex):

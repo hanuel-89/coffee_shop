@@ -194,7 +194,7 @@ def requires_auth(permission=''):
                 check_permissions(permission, payload)
             except Exception:
                 abort(403)
-                return f(payload, *args, **kwargs)
+            return f(*args, **kwargs)
 
         return wrapper
     return requires_auth_decorator
